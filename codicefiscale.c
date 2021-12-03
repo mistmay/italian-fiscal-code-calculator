@@ -1,0 +1,628 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <ctype.h>
+char provvisorio[3];
+void estrazione(char nome[], char* cons, char* voc) {
+	char consonanti[100];
+	char vocali[100];
+	int i = 0;
+	int j = 0;
+	int k = 0;
+	int count = 0;
+	nome[strcspn(nome, "\n")] = '\0';
+	for (i = 0; nome[i] != '\0'; i++) {
+		nome[i] = toupper(nome[i]);
+	}
+	i = 0;
+	for (i = 0; nome[i] != '\0'; i++) {
+		if (nome[i] == ' ') {
+			nome[i] = nome[i + 1];
+			for (j = i + 1; nome[j] != '\0'; j++) {
+				nome[j] = nome[j + 1];
+			}
+		}
+	}
+	nome[i + 1] = '\0';
+	i = 0;
+	j = 0;
+	for (i = 0; nome[i] != '\0'; i++) {
+		if (nome[i] == 'A' || nome[i] == 'E' || nome[i] == 'I' || nome[i] == 'O' || nome[i] == 'U') {
+			vocali[j] = nome[i];
+			j++;
+		}
+		else {
+			consonanti[k] = nome[i];
+			k++;
+		}
+	}
+	vocali[j] = '\0';
+	consonanti[k] = '\0';
+	strcpy(cons, consonanti);
+	strcpy(voc, vocali);
+}
+void primecifre(int a, int b, char checkvoc[], char checkcons[]) {
+	if(a < 3) {
+		if(a < 2) {
+			if (a < 1) {
+				if (b < 3) {
+					if (b < 2) {
+						if (b < 1) {
+							provvisorio[0] = 'X';
+							provvisorio[1] = 'X';
+							provvisorio[2] = 'X';
+						}
+						else {
+							provvisorio[0] = checkvoc[0];
+							provvisorio[1] = 'X';
+							provvisorio[2] = 'X';
+						}
+					}
+					else {
+						provvisorio[0] = checkvoc[0];
+						provvisorio[1] = checkvoc[1];
+						provvisorio[2] = 'X';
+					}
+				}
+				else {
+					provvisorio[0] = checkvoc[0];
+					provvisorio[1] = checkvoc[1];
+					provvisorio[2] = checkvoc[2];
+				}
+			}
+			else {
+				provvisorio[0] = checkcons[0];
+				provvisorio[1] = checkvoc[0];
+				provvisorio[2] = checkvoc[1];
+			}
+		}
+		else {
+			provvisorio[0] = checkcons[0];
+			provvisorio[1] = checkcons[1];
+			provvisorio[2] = checkvoc[0];
+		}
+	}
+	else {
+		provvisorio[0] = checkcons[0];
+		provvisorio[1] = checkcons[1];
+		provvisorio[2] = checkcons[2];
+	}
+}
+int main () {
+	char cognome[100];
+	char fiscale[16];
+	int lenght;
+	int lenght1;
+	char consonanti1[100];
+    char vocali1[100];
+    char consonanti2[100];
+    char vocali2[100];
+    char anno[5];
+    int mese = 0;
+    char sesso;
+    char nazione[100];
+    char controllo[100];
+    char controllo2[100];
+    int q = 0;
+    int x = 0;
+    FILE * fp;
+    if ((fp = fopen("filecodicefiscale", "r")) == NULL) {
+    	printf("Errore. Il file filecodicefiscale non e' stato trovato nella stessa cartella dell eseguibile.\nRiavviare di nuovo l eseguibile in presenza del file\n");
+    	system("PAUSE");
+    	exit(0);
+	}
+	printf("Calcolo Codice Fiscale:\nSeguire le istruzioni:\n");
+	system("PAUSE");
+	printf("Inserire Cognome:\n");
+	scanf(" %[^\n]s", cognome);
+	estrazione(cognome, consonanti1, vocali1);
+	printf("Inserire Nome:\n");
+	scanf(" %[^\n]s", cognome);
+	estrazione(cognome, consonanti2, vocali2);
+	lenght = strlen(consonanti1);
+	lenght1 = strlen(vocali1);
+	primecifre(lenght, lenght1, vocali1, consonanti1);
+	strcpy(fiscale, provvisorio);
+	lenght = strlen(consonanti2);
+	lenght1 = strlen(vocali2);
+	if (lenght > 3) {
+		fiscale[3] = consonanti2[0];
+	    fiscale[4] = consonanti2[2];
+	    fiscale[5] = consonanti2[3];
+	}
+	else {
+		primecifre(lenght, lenght1, vocali2, consonanti2);
+	    fiscale[3] = provvisorio[0];
+	    fiscale[4] = provvisorio[1];
+	    fiscale[5] = provvisorio[2];
+	}
+	lenght1 = 0;
+	while(lenght1 == 0) {
+		printf("Inserire anno di nascita (numero di 4 cifre):\n");
+		scanf("%s", anno);
+		anno[strcspn(anno, "\n")] = '\0';
+		lenght = strlen(anno);
+		for (mese = 0; mese < lenght; mese++) {
+			if (isdigit(anno[mese]) == 0) {
+				printf("Errore. Non e' stato inserito un numero di 4 cifre. Si prega di riavviare il programma.\n");
+				system("PAUSE");
+				exit(0);
+			}
+		}
+		if (lenght != 4) {
+			printf("Errore. Inserire numero di 4 cifre\n");
+		}
+		else {
+			fiscale[6] = anno[2];
+			fiscale[7] = anno[3];
+			lenght1 = 1;
+		}
+	}
+	while(lenght1 == 1) {
+		printf("Inserire mese di nascita (1 per Gennaio, 2 per Febbraio .....12 per Dicembre):\n");
+		scanf("%s", cognome);
+		mese = atoi(cognome);
+		switch(mese) {
+			case 1 :
+				fiscale[8] = 'A';
+				lenght1 = 0;
+				break;
+			case 2 :
+			    fiscale[8] = 'B';
+			    lenght1 = 0;
+			    break;
+		    case 3 :
+			    fiscale[8] = 'C';
+			    lenght1 = 0;
+			    break;
+		    case 4 :
+		        fiscale[8] = 'D';
+		        lenght1 = 0;
+			    break;
+		    case 5 :
+		        fiscale[8] = 'E';
+		        lenght1 = 0;
+			    break;
+		    case 6 :
+		        fiscale[8] = 'H';
+		        lenght1 = 0;
+			    break;
+		    case 7 :
+		        fiscale[8] = 'L';
+		        lenght1 = 0;
+			    break;
+		    case 8 :
+		        fiscale[8] = 'M';
+		        lenght1 = 0;
+			    break;
+		    case 9 :
+		        fiscale[8] = 'P';
+		        lenght1 = 0;
+			    break;
+		    case 10 :
+		        fiscale[8] = 'R';
+		        lenght1 = 0;
+			    break;
+		    case 11 :
+		        fiscale[8] = 'S';
+		        lenght1 = 0;
+			    break;
+		    case 12 :
+		        fiscale[8] = 'T';
+		        lenght1 = 0;
+			    break;
+		    default :
+		    	printf("Errore. Inserire un numero di mese Valido\n");
+		}
+	}
+	while(lenght1 == 0) {
+		printf("Inserire giorno di nascita in numero (da 1 a 31):\n");
+		scanf("%s", cognome);
+		mese = atoi(cognome);
+		if (mese < 1 || mese > 31) {
+			printf("Errore. Inserire un numero da 1 a 31\n");
+		}
+		else {
+			lenght1 = 1;
+		}
+	}
+	while(lenght1 == 1) {
+		printf("Inserire Sesso (M per maschio, F per femmina):\n");
+		scanf(" %s", consonanti1);
+		sesso = consonanti1[0];
+		sesso = toupper(sesso);
+		switch(sesso) {
+			case 'M' :
+				lenght1 = 0;
+				break;
+			case 'F' :
+				mese = mese + 40;
+				lenght1 = 0;
+				break;
+			default :
+				printf("Errore. Inserire o M o F\n");
+		}
+	}
+	if (mese < 10) {
+		sprintf(anno, "0%d", mese);
+	}
+	else {
+		sprintf(anno, "%d", mese);
+	}
+	fiscale[9] = anno[0];
+	fiscale[10] = anno[1];
+	printf("Inserire nome citta' di nascita (in caso di nascita in stato estero, purtroppo questo programma non funziona):\n");
+	scanf(" %[^\n]s", nazione);
+	nazione[strcspn(nazione, "\n")] = '\0';
+	for (lenght1 = 0; nazione[lenght1] != '\0'; lenght1++) {
+		nazione[lenght1] = toupper(nazione[lenght1]);
+	}
+	for (q = 0; nazione[q] != '\0'; q++) {
+		if (nazione[q] == ' ') {
+			nazione[q] = nazione[q + 1];
+			for (x = q + 1; nazione[x] != '\0'; x++) {
+				nazione[x] = nazione[x + 1];
+			}
+		}
+	}
+	nazione[strcspn(nazione, "\n")] = '\0';
+	fp = fopen("filecodicefiscale", "r");
+	while (fscanf(fp,"%s    %s", &controllo, &controllo2) != EOF) {
+		if (strcmp(controllo2, nazione) == 0) {
+			strcpy(nazione, controllo);
+			lenght1 = 0;
+		}
+	}
+	fclose(fp); 
+	if (lenght1 != 0) {
+		printf("Errore. Citta' o Stato non trovato. Si prega di riavviare il programma dall inizio\n");
+		system("PAUSE");
+		exit(0);
+	}
+	fiscale[11] = nazione[0];
+	fiscale[12] = nazione[1];
+	fiscale[13] = nazione[2];
+	fiscale[14] = nazione[3];
+	fiscale[15] = '\0';
+	fiscale[16] = '\0';
+	fiscale[17] = '\0';
+	lenght = 0;
+	lenght1 = 0;
+	for (lenght = 0; fiscale[lenght] != '\0'; lenght = lenght + 2) {
+		consonanti1[lenght1] = fiscale[lenght];
+		lenght1++;
+	}
+	consonanti1[lenght1] = '\0';
+	lenght = 0;
+	lenght1 = 0;
+	for (lenght = 1; fiscale[lenght] != '\0'; lenght = lenght + 2) {
+		consonanti2[lenght1] = fiscale[lenght];
+		lenght1++;
+	}
+	consonanti2[lenght1] = '\0';
+	lenght = 0;
+	lenght1 = 0;
+	for (lenght = 0; consonanti1[lenght] != '\0'; lenght++) {
+		switch(consonanti1[lenght]) {
+			case '0' :
+				lenght1 = lenght1 + 1;
+				break;
+			case '1' :
+				lenght1 = lenght1 + 0;
+				break;
+			case '2' :
+				lenght1 = lenght1 + 5;
+				break;
+			case '3' :
+				lenght1 = lenght1 + 7;
+				break;
+			case '4' :
+			    lenght1 = lenght1 + 9;
+				break;
+			case '5' :
+				lenght1 = lenght1 + 13;
+				break;
+			case '6' :
+				lenght1 = lenght1 + 15;
+				break;
+			case '7' :
+				lenght1 = lenght1 + 17;
+				break;
+			case '8' :
+				lenght1 = lenght1 + 19;
+				break;
+			case '9' :
+				lenght1 = lenght1 + 21;
+				break;
+			case 'A' :
+				lenght1 = lenght1 + 1;
+				break;
+			case 'B' :
+				lenght1 = lenght1 + 0;
+				break;
+			case 'C' :
+				lenght1 = lenght1 + 5;
+				break;
+			case 'D' :
+				lenght1 = lenght1 + 7;
+				break;
+			case 'E' :
+				lenght1 = lenght1 + 9;
+				break;
+			case 'F' :
+				lenght1 = lenght1 + 13;
+				break;
+			case 'G' :
+				lenght1 = lenght1 + 15;
+				break;
+			case 'H' :
+				lenght1 = lenght1 + 17;
+				break;
+			case 'I' :
+				lenght1 = lenght1 + 19;
+				break;
+			case 'J' :
+				lenght1 = lenght1 + 21;
+				break;
+			case 'K' :
+				lenght1 = lenght1 + 2;
+				break;
+			case 'L' :
+				lenght1 = lenght1 + 4;
+				break;
+			case 'M' :
+				lenght1 = lenght1 + 18;
+				break;
+			case 'N' :
+				lenght1 = lenght1 + 20;
+				break;
+			case 'O' :
+				lenght1 = lenght1 + 11;
+				break;
+			case 'P' :
+				lenght1 = lenght1 + 3;
+				break;
+			case 'Q' :
+				lenght1 = lenght1 + 6;
+				break;
+			case 'R' :
+				lenght1 = lenght1 + 8;
+				break;
+			case 'S' :
+				lenght1 = lenght1 + 12;
+				break;
+			case 'T' :
+				lenght1 = lenght1 + 14;
+				break;
+			case 'U' :
+				lenght1 = lenght1 + 16;
+				break;
+			case 'V' :
+				lenght1 = lenght1 + 10;
+				break;
+			case 'W' :
+				lenght1 = lenght1 + 22;
+				break;
+			case 'X' :
+				lenght1 = lenght1 + 25;
+				break;
+			case 'Y' :
+				lenght1 = lenght1 + 24;
+				break;
+			case 'Z' :
+				lenght1 = lenght1 + 23;
+				break;
+			default :
+				printf("Errore. Si prega di riavviare il programma\n");
+				system("PAUSE");
+				exit(0);
+		}
+	}
+	lenght = 0;
+	for (lenght = 0; consonanti2[lenght] != '\0'; lenght++) {
+		switch(consonanti2[lenght]) {
+			case '0' :
+				lenght1 = lenght1 + 0;
+				break;
+			case '1' :
+				lenght1 = lenght1 + 1;
+				break;
+			case '2' :
+				lenght1 = lenght1 + 2;
+				break;
+			case '3' :
+				lenght1 = lenght1 + 3;
+				break;
+			case '4' :
+			    lenght1 = lenght1 + 4;
+				break;
+			case '5' :
+				lenght1 = lenght1 + 5;
+				break;
+			case '6' :
+				lenght1 = lenght1 + 6;
+				break;
+			case '7' :
+				lenght1 = lenght1 + 7;
+				break;
+			case '8' :
+				lenght1 = lenght1 + 8;
+				break;
+			case '9' :
+				lenght1 = lenght1 + 9;
+				break;
+			case 'A' :
+				lenght1 = lenght1 + 0;
+				break;
+			case 'B' :
+				lenght1 = lenght1 + 1;
+				break;
+			case 'C' :
+				lenght1 = lenght1 + 2;
+				break;
+			case 'D' :
+				lenght1 = lenght1 + 3;
+				break;
+			case 'E' :
+				lenght1 = lenght1 + 4;
+				break;
+			case 'F' :
+				lenght1 = lenght1 + 5;
+				break;
+			case 'G' :
+				lenght1 = lenght1 + 6;
+				break;
+			case 'H' :
+				lenght1 = lenght1 + 7;
+				break;
+			case 'I' :
+				lenght1 = lenght1 + 8;
+				break;
+			case 'J' :
+				lenght1 = lenght1 + 9;
+				break;
+			case 'K' :
+				lenght1 = lenght1 + 10;
+				break;
+			case 'L' :
+				lenght1 = lenght1 + 11;
+				break;
+			case 'M' :
+				lenght1 = lenght1 + 12;
+				break;
+			case 'N' :
+				lenght1 = lenght1 + 13;
+				break;
+			case 'O' :
+				lenght1 = lenght1 + 14;
+				break;
+			case 'P' :
+				lenght1 = lenght1 + 15;
+				break;
+			case 'Q' :
+				lenght1 = lenght1 + 16;
+				break;
+			case 'R' :
+				lenght1 = lenght1 + 17;
+				break;
+			case 'S' :
+				lenght1 = lenght1 + 18;
+				break;
+			case 'T' :
+				lenght1 = lenght1 + 19;
+				break;
+			case 'U' :
+				lenght1 = lenght1 + 20;
+				break;
+			case 'V' :
+				lenght1 = lenght1 + 21;
+				break;
+			case 'W' :
+				lenght1 = lenght1 + 22;
+				break;
+			case 'X' :
+				lenght1 = lenght1 + 23;
+				break;
+			case 'Y' :
+				lenght1 = lenght1 + 24;
+				break;
+			case 'Z' :
+				lenght1 = lenght1 + 25;
+				break;
+			default :
+				printf("Errore. Si prega di riavviare il programma\n");
+				system("PAUSE");
+				exit(0);
+		}
+	}
+	fiscale[15] = 'A';
+	fiscale[16] = '\0';
+	switch(lenght1 % 26) {
+		case 0 :
+			sesso = 'A';
+			break;
+		case 1 :
+			sesso = 'B';
+			break;
+		case 2 :
+			sesso = 'C';
+			break;
+		case 3 :
+			sesso = 'D';
+			break;
+		case 4 :
+			sesso = 'E';
+			break;
+		case 5 :
+			sesso = 'F';
+			break;
+		case 6 :
+			sesso = 'G';
+			break;
+		case 7 :
+			sesso = 'H';
+			break;
+		case 8 :
+			sesso = 'I';
+			break;
+		case 9 :
+			sesso = 'J';
+			break;
+		case 10 :
+			sesso = 'K';
+			break;
+		case 11 :
+			sesso = 'L';
+			break;
+		case 12 :
+			sesso = 'M';
+			break;
+		case 13 :
+			sesso = 'N';
+			break;
+		case 14 :
+			sesso = 'O';
+			break;
+		case 15 :
+			sesso = 'P';
+			break;
+		case 16 :
+			sesso = 'Q';
+			break;
+		case 17 :
+			sesso = 'R';
+			break;
+		case 18 :
+			sesso = 'S';
+			break;
+		case 19 :
+			sesso = 'T';
+			break;
+		case 20 :
+			sesso = 'U';
+			break;
+		case 21 :
+			sesso = 'V';
+			break;
+		case 22 :
+			sesso = 'W';
+			break;
+		case 23 :
+			sesso = 'X';
+			break;
+		case 24 :
+			sesso = 'Y';
+			break;
+		case 25 :
+			sesso = 'Z';
+			break;
+		default :
+			printf("Errore. Si prega di riavviare il programma\n");
+			system("PAUSE");
+			exit(0);
+	}
+	fiscale[15] = sesso;
+	printf("Il tuo Codice Fiscale:\n--------\n%s\n---------\nGrazie per aver usato questo programma.\n", fiscale);
+	system("PAUSE");
+	return 0;
+}
